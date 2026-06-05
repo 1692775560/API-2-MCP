@@ -1,0 +1,40 @@
+{
+  "name": "api-to-mcp",
+  "version": "0.1.0",
+  "description": "Generate production-ready MCP servers from OpenAPI specs.",
+  "type": "module",
+  "bin": {
+    "api-to-mcp": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "generate:petstore": "node dist/cli.js generate examples/petstore/openapi.json --out examples/petstore/generated",
+    "check": "npm run build && npm run generate:petstore"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "openapi",
+    "swagger",
+    "agent",
+    "codegen"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
