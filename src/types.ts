@@ -71,7 +71,15 @@ export type OpenApiOperation = {
 
 export type OpenApiPathItem = {
   parameters?: Array<OpenApiParameter | OpenApiReference>;
-} & Record<string, OpenApiOperation | Array<OpenApiParameter | OpenApiReference> | unknown>;
+  get?: OpenApiOperation;
+  put?: OpenApiOperation;
+  post?: OpenApiOperation;
+  delete?: OpenApiOperation;
+  options?: OpenApiOperation;
+  head?: OpenApiOperation;
+  patch?: OpenApiOperation;
+  trace?: OpenApiOperation;
+};
 
 export type ApiOperation = {
   toolName: string;

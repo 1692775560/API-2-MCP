@@ -7,7 +7,8 @@
     "api-to-mcp": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
     "dev": "tsx src/cli.ts",
     "test": "node --test tests/*.test.mjs",
     "generate:petstore": "node dist/cli.js generate examples/petstore/openapi.json --out examples/petstore/generated",
