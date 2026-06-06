@@ -5,11 +5,11 @@
 <h1 align="center">API-2-MCP</h1>
 
 <p align="center">
-  <b>Generate production-ready MCP servers from OpenAPI specs.</b>
+  <b>OpenAPI 명세에서 실행 가능한 MCP Server를 생성합니다.</b>
 </p>
 
 <p align="center">
-  Turn REST APIs into agent-ready tools for Claude Code, Codex, and other MCP clients.
+  REST API를 Claude Code, Codex 및 다른 MCP 클라이언트가 바로 호출할 수 있는 구조화된 도구로 바꿉니다.
 </p>
 
 <p align="center">
@@ -40,14 +40,15 @@
 
 ## Why API-2-MCP
 
-Modern AI agents need structured tools. Most APIs are already described by
-OpenAPI, but wiring them into MCP servers is repetitive and easy to get wrong.
-API-2-MCP reads an OpenAPI 3.x JSON spec and generates a runnable TypeScript MCP
-server with schemas, auth wiring, and operation-level tools.
+AI Agent에는 안정적이고 발견하기 쉬운 구조화 도구가 필요합니다. 많은 API는
+이미 OpenAPI로 설명되어 있지만, 이를 MCP tool로 직접 감싸는 작업은 반복적이고
+오류가 나기 쉽습니다. API-2-MCP는 OpenAPI 3.x JSON 명세를 읽고 입력 schema,
+인증 환경 변수, operation-to-tool 매핑을 포함한 TypeScript MCP Server를
+생성합니다.
 
-| From | To |
+| Input | Output |
 | --- | --- |
-| OpenAPI 3.x JSON specs | TypeScript MCP servers |
+| OpenAPI 3.x JSON spec | TypeScript MCP Server |
 | REST path/query/header/body params | MCP tool input schemas |
 | API keys and bearer tokens | `.env`-driven generated clients |
 | API operation IDs | Agent-callable MCP tools |
@@ -55,13 +56,13 @@ server with schemas, auth wiring, and operation-level tools.
 
 ## Quick Start
 
-Use directly from GitHub:
+GitHub에서 바로 실행:
 
 ```bash
 npx --yes github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
 ```
 
-Fetch or discover a remote OpenAPI spec:
+원격 URL에서 OpenAPI 명세 가져오기 또는 발견:
 
 ```bash
 npx --yes github:1692775560/API-2-MCP create \
@@ -69,7 +70,7 @@ npx --yes github:1692775560/API-2-MCP create \
   --out ./my-mcp-server
 ```
 
-Then run the generated MCP server:
+생성된 MCP Server 실행:
 
 ```bash
 cd ./my-mcp-server
@@ -87,14 +88,14 @@ npm install
 npm run build
 ```
 
-Generate the bundled examples:
+내장 예제 생성:
 
 ```bash
 npm run generate:petstore
 npm run generate:deepseek
 ```
 
-Run the full local check:
+전체 로컬 체크:
 
 ```bash
 npm run check
@@ -108,7 +109,7 @@ npm run check
 npx --yes github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
 ```
 
-Use `--base-url` when the spec contains a relative `servers.url`:
+`servers.url`이 상대 경로라면 `--base-url`을 지정하세요:
 
 ```bash
 npx --yes github:1692775560/API-2-MCP generate ./openapi.json \
@@ -124,8 +125,8 @@ npx --yes github:1692775560/API-2-MCP create \
   --out ./my-mcp-server
 ```
 
-If `--url` is a base URL instead of an OpenAPI JSON URL, API-2-MCP probes common
-discovery paths:
+`--url`이 OpenAPI JSON 주소가 아니라 API base URL이라면 API-2-MCP는 다음
+discovery path를 시도합니다:
 
 - `/openapi.json`
 - `/swagger.json`
@@ -154,22 +155,20 @@ npx --yes github:1692775560/API-2-MCP create \
   --out ./my-mcp-server
 ```
 
-Secrets are written to the generated `.env` file. Avoid pasting API keys into
-chat transcripts or global agent settings.
+시크릿은 생성된 `.env` 파일에 기록됩니다. API key를 공개 채팅 기록이나 전역
+Agent 설정에 붙여 넣지 마세요.
 
 ## What It Generates
 
-Generated projects include:
+생성 프로젝트에는 다음이 포함됩니다:
 
-- MCP tool registration for each OpenAPI operation
-- Input schemas derived from path, query, header, cookie, and JSON body params
-- API key or bearer token auth through environment variables
-- A generated README and `.env.example`
-- A copied `openapi.json` for reproducibility
-- Conservative read/write/destructive labels based on HTTP method
-- A TypeScript MCP server that runs over stdio
-
-Example generated project:
+- OpenAPI operation별 MCP tool 등록
+- path, query, header, cookie, JSON body에서 생성된 입력 schema
+- 환경 변수 기반 API key / bearer token 인증
+- 생성 프로젝트용 README와 `.env.example`
+- 재현성을 위한 `openapi.json` 복사본
+- HTTP method 기반 read/write/destructive 라벨
+- stdio로 실행되는 TypeScript MCP Server
 
 ```text
 my-mcp-server/
@@ -183,7 +182,7 @@ my-mcp-server/
 
 ## Claude Code & Codex
 
-Install the Claude Code slash command and Codex skill:
+Claude Code slash command와 Codex skill 설치:
 
 ```bash
 git clone https://github.com/1692775560/API-2-MCP.git
@@ -193,34 +192,29 @@ npm run build
 npm run install:agent-command
 ```
 
-Then use Claude Code:
+Claude Code에서 사용:
 
 ```text
 /api-to-mcp generate ./openapi.json --out ./my-mcp-server
 /api-to-mcp create --url https://api.example.com/openapi.json --out ./my-mcp-server
 ```
 
-For Codex, install the included skill with the same script, then ask Codex to use
-the `api-to-mcp` skill with the same arguments.
+Codex에서는 포함된 skill을 설치한 뒤 같은 인자로 `api-to-mcp` skill을 사용하면
+됩니다.
 
 ## DeepSeek Example
-
-Generate a DeepSeek MCP server from the bundled OpenAPI example:
 
 ```bash
 npm run build
 npm run generate:deepseek
 ```
 
-Run a live smoke test with your own key:
+라이브 smoke test:
 
 ```bash
 export DEEPSEEK_API_KEY="sk-..."
 npm run smoke:deepseek
 ```
-
-The smoke test generates a DeepSeek MCP server, starts it over stdio, lists
-tools, and calls the generated chat completion tool.
 
 ## Supported Specs
 
