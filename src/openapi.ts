@@ -34,6 +34,8 @@ export async function loadOpenApiSpec(specPath: string): Promise<OpenApiSpec> {
 }
 
 export function extractOperations(spec: OpenApiSpec): ApiOperation[] {
+  assertSupportedOpenApiSpec(spec);
+
   if (!spec.paths) {
     throw new Error("OpenAPI spec has no paths object.");
   }
@@ -82,11 +84,35 @@ export function extractOperations(spec: OpenApiSpec): ApiOperation[] {
 }
 
 export function getBaseUrl(spec: OpenApiSpec): string {
-  return spec.servers?.[0]?.url || "https://api.example.com";
+  return resolveBaseUrl(spec);
+}
+
+export function resolveBaseUrl(spec: OpenApiSpec, sourceUrl?: string): string {
+  const serverUrl = spec.servers?.[0]?.url || "https://api.example.com";
+
+  try {
+    return new URL(serverUrl).toString().replace(/\/$/, "");
+  } catch {
+    if (!sourceUrl) {
+      throw new Error(`OpenAPI server URL is relative (${serverUrl}). Pass --base-url to generate a runnable server.`);
+    }
+
+    return new URL(serverUrl, sourceUrl).toString().replace(/\/$/, "");
+  }
 }
 
 export function getProjectName(spec: OpenApiSpec, fallback = "generated-mcp-server"): string {
   return slugify(spec.info?.title || fallback);
+}
+
+export function assertSupportedOpenApiSpec(spec: OpenApiSpec): void {
+  if (spec.swagger) {
+    throw new Error("Swagger 2.0 specs are not supported yet. Convert the spec to OpenAPI 3.x before generating.");
+  }
+
+  if (!spec.openapi?.startsWith("3.")) {
+    throw new Error("Only OpenAPI 3.x JSON specs are supported.");
+  }
 }
 
 export function inputSchemaForOperation(operation: ApiOperation): JsonSchema {

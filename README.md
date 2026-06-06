@@ -37,6 +37,10 @@ MCP tool.
 npx api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
+Use `--base-url` when a local OpenAPI spec contains a relative `servers.url`.
+OpenAPI 3.x JSON specs are supported; Swagger 2.0 specs should be converted to
+OpenAPI 3.x before generation.
+
 For the simple URL + key flow:
 
 ```bash

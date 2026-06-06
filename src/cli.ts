@@ -17,11 +17,13 @@ program
   .argument("<spec>", "Path to an OpenAPI JSON spec.")
   .requiredOption("-o, --out <dir>", "Output directory.")
   .option("-n, --name <name>", "Generated package/server name.")
-  .action(async (spec: string, options: { out: string; name?: string }) => {
+  .option("--base-url <url>", "Override the API base URL used by the generated server.")
+  .action(async (spec: string, options: { out: string; name?: string; baseUrl?: string }) => {
     await generateMcpServer({
       specPath: resolve(spec),
       outDir: resolve(options.out),
       serverName: options.name,
+      baseUrl: options.baseUrl,
     });
 
     console.log(`Generated MCP server at ${resolve(options.out)}`);
@@ -73,6 +75,7 @@ program
         spec,
         outDir,
         serverName: options.name,
+        sourceUrl,
         env: {
           baseUrl: options.baseUrl,
           bearerToken: options.auth === "bearer" ? options.key : undefined,

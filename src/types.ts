@@ -89,12 +89,14 @@ export type GeneratorOptions = {
   specPath: string;
   outDir: string;
   serverName?: string;
+  baseUrl?: string;
 };
 
 export type GenerateFromSpecOptions = {
   spec: OpenApiSpec;
   outDir: string;
   serverName?: string;
+  sourceUrl?: string;
   env?: {
     bearerToken?: string;
     apiKey?: string;

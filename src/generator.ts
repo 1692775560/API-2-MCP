@@ -6,6 +6,7 @@ import {
   getProjectName,
   inputSchemaForOperation,
   loadOpenApiSpec,
+  resolveBaseUrl,
 } from "./openapi.js";
 import type { ApiOperation, GenerateFromSpecOptions, GeneratorOptions, OpenApiSpec } from "./types.js";
 
@@ -15,6 +16,7 @@ export async function generateMcpServer(options: GeneratorOptions): Promise<void
     spec,
     outDir: options.outDir,
     serverName: options.serverName,
+    env: options.baseUrl ? { baseUrl: options.baseUrl } : undefined,
   });
 }
 
@@ -22,7 +24,7 @@ export async function generateMcpServerFromSpec(options: GenerateFromSpecOptions
   const spec = options.spec;
   const operations = extractOperations(spec);
   const projectName = options.serverName || getProjectName(spec);
-  const baseUrl = options.env?.baseUrl || getBaseUrl(spec);
+  const baseUrl = options.env?.baseUrl || resolveBaseUrl(spec, options.sourceUrl);
   const outDir = resolve(options.outDir);
 
   await mkdir(`${outDir}/src`, { recursive: true });

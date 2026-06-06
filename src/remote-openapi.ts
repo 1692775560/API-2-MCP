@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { assertSupportedOpenApiSpec } from "./openapi.js";
 import type { OpenApiSpec } from "./types.js";
 
 const DISCOVERY_PATHS = [
@@ -48,6 +49,13 @@ export async function loadOpenApiSpecFromUrl(
       const spec = (await response.json()) as OpenApiSpec;
       if (!spec.paths || (!spec.openapi && !spec.swagger)) {
         errors.push(`${url}: response is JSON but not an OpenAPI spec`);
+        continue;
+      }
+
+      try {
+        assertSupportedOpenApiSpec(spec);
+      } catch (error) {
+        errors.push(`${url}: ${error instanceof Error ? error.message : String(error)}`);
         continue;
       }
 
