@@ -17,6 +17,9 @@ export type JsonSchema = {
   required?: string[];
   items?: JsonSchema;
   additionalProperties?: boolean | JsonSchema;
+  allOf?: JsonSchema[];
+  anyOf?: JsonSchema[];
+  oneOf?: JsonSchema[];
   format?: string;
   default?: unknown;
 };

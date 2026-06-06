@@ -204,11 +204,27 @@ function appendQueryParams(url: URL, queryParamNames: string[], args: ToolArgs):
   }
 }
 
+function appendCookieParams(headers: Record<string, string>, cookieParamNames: string[], args: ToolArgs): void {
+  const cookies: string[] = [];
+
+  for (const name of cookieParamNames) {
+    const value = args[name];
+    if (value !== undefined && value !== null && value !== "") {
+      cookies.push(\`\${encodeURIComponent(name)}=\${encodeURIComponent(String(value))}\`);
+    }
+  }
+
+  if (cookies.length > 0) {
+    headers.cookie = cookies.join("; ");
+  }
+}
+
 async function callApi(config: {
   method: string;
   path: string;
   queryParamNames: string[];
   headerParamNames: string[];
+  cookieParamNames: string[];
   args: ToolArgs;
   body?: unknown;
 }) {
@@ -226,6 +242,8 @@ async function callApi(config: {
       headers[name] = String(value);
     }
   }
+
+  appendCookieParams(headers, config.cookieParamNames, config.args);
 
   const init: RequestInit = {
     method: config.method,
@@ -375,6 +393,9 @@ function toolDefinitionSource(operation: ApiOperation): string {
   const headerParamNames = operation.parameters
     .filter((parameter) => parameter.in === "header")
     .map((parameter) => parameter.name);
+  const cookieParamNames = operation.parameters
+    .filter((parameter) => parameter.in === "cookie")
+    .map((parameter) => parameter.name);
 
   return `  {
     name: ${JSON.stringify(operation.toolName)},
@@ -386,6 +407,7 @@ function toolDefinitionSource(operation: ApiOperation): string {
       path: ${JSON.stringify(operation.path)},
       queryParamNames: ${JSON.stringify(queryParamNames)},
       headerParamNames: ${JSON.stringify(headerParamNames)},
+      cookieParamNames: ${JSON.stringify(cookieParamNames)},
       args,
       body: "body" in args ? args.body : undefined,
     });

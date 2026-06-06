@@ -216,6 +216,15 @@ function dereferenceJsonSchemaInner(
       typeof schema.additionalProperties === "object"
         ? dereferenceJsonSchemaInner(spec, schema.additionalProperties, new Set(seenRefs))
         : schema.additionalProperties,
+    allOf: schema.allOf
+      ? schema.allOf.map((item) => dereferenceJsonSchemaInner(spec, item, new Set(seenRefs)))
+      : undefined,
+    anyOf: schema.anyOf
+      ? schema.anyOf.map((item) => dereferenceJsonSchemaInner(spec, item, new Set(seenRefs)))
+      : undefined,
+    oneOf: schema.oneOf
+      ? schema.oneOf.map((item) => dereferenceJsonSchemaInner(spec, item, new Set(seenRefs)))
+      : undefined,
   };
 }
 
