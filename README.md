@@ -1,5 +1,7 @@
 # api-to-mcp
 
+![API-2-MCP hero](docs/assets/readme-hero.png)
+
 Generate a TypeScript MCP server from an OpenAPI spec.
 
 ## MVP
