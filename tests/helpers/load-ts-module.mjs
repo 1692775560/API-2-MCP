@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const tempDir = resolve(rootDir, ".tmp/test-modules");
+const tempDir = resolve(rootDir, ".tmp/test-modules", String(process.pid));
 
 export async function loadTsModule(sourcePath, replacements = []) {
   const absoluteSourcePath = resolve(rootDir, sourcePath);
