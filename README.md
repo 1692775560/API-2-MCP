@@ -37,6 +37,13 @@ MCP tool.
 npx api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
+Use directly from GitHub before the package is published:
+
+```bash
+npx github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
+npx github:1692775560/API-2-MCP create --url https://api.example.com/openapi.json --out ./my-mcp-server
+```
+
 Use `--base-url` when a local OpenAPI spec contains a relative `servers.url`.
 OpenAPI 3.x JSON specs are supported; Swagger 2.0 specs should be converted to
 OpenAPI 3.x before generation.
@@ -67,6 +74,28 @@ npx api-to-mcp create \
 
 The generated project gets a ready `.env` file plus an `openapi.json` copy.
 Use `--timeout-ms` to change the per-request OpenAPI discovery timeout.
+
+## Agent Install
+
+Install the Claude Code slash command and Codex skill from a GitHub checkout:
+
+```bash
+git clone https://github.com/1692775560/API-2-MCP.git
+cd API-2-MCP
+npm install
+npm run build
+npm run install:agent-command
+```
+
+Then use Claude Code:
+
+```text
+/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+/api-to-mcp create --url https://api.example.com/openapi.json --out ./my-mcp-server
+```
+
+For Codex, install the included skill with the same script, then ask Codex to use
+the `api-to-mcp` skill with the same arguments.
 
 ## Roadmap
 

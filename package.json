@@ -12,7 +12,8 @@
     "generate:petstore": "node dist/cli.js generate examples/petstore/openapi.json --out examples/petstore/generated",
     "generate:deepseek": "node dist/cli.js generate examples/deepseek/openapi.json --out examples/deepseek/generated",
     "check": "npm run build && npm run generate:petstore && npm run generate:deepseek",
-    "smoke:deepseek": "npm run build && node scripts/smoke-deepseek.mjs"
+    "smoke:deepseek": "npm run build && node scripts/smoke-deepseek.mjs",
+    "install:agent-command": "node scripts/install-agent-command.mjs"
   },
   "files": [
     "dist",
