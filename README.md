@@ -37,6 +37,32 @@ MCP tool.
 npx api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
+For the simple URL + key flow:
+
+```bash
+npx api-to-mcp create \
+  --url https://api.example.com/openapi.json \
+  --key your_api_key \
+  --out ./my-mcp-server
+```
+
+If `--url` is a base URL instead of an OpenAPI JSON URL, `api-to-mcp` will try
+common discovery paths such as `/openapi.json`, `/swagger.json`, `/v3/api-docs`,
+and `/.well-known/openapi.json`.
+
+For API-key headers instead of bearer auth:
+
+```bash
+npx api-to-mcp create \
+  --url https://api.example.com/openapi.json \
+  --auth api-key \
+  --key your_api_key \
+  --key-header x-api-key \
+  --out ./my-mcp-server
+```
+
+The generated project gets a ready `.env` file plus an `openapi.json` copy.
+
 ## Roadmap
 
 - YAML input

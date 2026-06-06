@@ -74,3 +74,15 @@ export type GeneratorOptions = {
   outDir: string;
   serverName?: string;
 };
+
+export type GenerateFromSpecOptions = {
+  spec: OpenApiSpec;
+  outDir: string;
+  serverName?: string;
+  env?: {
+    bearerToken?: string;
+    apiKey?: string;
+    apiKeyHeader?: string;
+    baseUrl?: string;
+  };
+};

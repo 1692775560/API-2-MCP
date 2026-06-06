@@ -7,13 +7,22 @@ import {
   inputSchemaForOperation,
   loadOpenApiSpec,
 } from "./openapi.js";
-import type { ApiOperation, GeneratorOptions, OpenApiSpec } from "./types.js";
+import type { ApiOperation, GenerateFromSpecOptions, GeneratorOptions, OpenApiSpec } from "./types.js";
 
 export async function generateMcpServer(options: GeneratorOptions): Promise<void> {
   const spec = await loadOpenApiSpec(options.specPath);
+  await generateMcpServerFromSpec({
+    spec,
+    outDir: options.outDir,
+    serverName: options.serverName,
+  });
+}
+
+export async function generateMcpServerFromSpec(options: GenerateFromSpecOptions): Promise<void> {
+  const spec = options.spec;
   const operations = extractOperations(spec);
   const projectName = options.serverName || getProjectName(spec);
-  const baseUrl = getBaseUrl(spec);
+  const baseUrl = options.env?.baseUrl || getBaseUrl(spec);
   const outDir = resolve(options.outDir);
 
   await mkdir(`${outDir}/src`, { recursive: true });
@@ -24,6 +33,7 @@ export async function generateMcpServer(options: GeneratorOptions): Promise<void
     writeFile(`${outDir}/.env.example`, envExample(baseUrl), "utf8"),
     writeFile(`${outDir}/README.md`, readme(spec, projectName, baseUrl, operations), "utf8"),
     writeFile(`${outDir}/src/index.ts`, serverSource(projectName, baseUrl, operations), "utf8"),
+    ...(options.env ? [writeFile(`${outDir}/.env`, envFile(baseUrl, options.env), "utf8")] : []),
   ]);
 }
 
@@ -83,6 +93,14 @@ function envExample(baseUrl: string): string {
 API_BEARER_TOKEN=
 API_KEY=
 API_KEY_HEADER=x-api-key
+`;
+}
+
+function envFile(baseUrl: string, env: NonNullable<GenerateFromSpecOptions["env"]>): string {
+  return `API_BASE_URL=${env.baseUrl || baseUrl}
+API_BEARER_TOKEN=${env.bearerToken || ""}
+API_KEY=${env.apiKey || ""}
+API_KEY_HEADER=${env.apiKeyHeader || "x-api-key"}
 `;
 }
 
