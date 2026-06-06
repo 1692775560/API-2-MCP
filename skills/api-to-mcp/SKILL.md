@@ -28,8 +28,8 @@ node dist/cli.js create --url https://api.example.com/openapi.json --out ./my-mc
 From GitHub without a local checkout:
 
 ```bash
-npx github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
-npx github:1692775560/API-2-MCP create --url https://api.example.com/openapi.json --out ./my-mcp-server
+npx --yes @api2mcp/cli generate ./openapi.json --out ./my-mcp-server
+npx --yes @api2mcp/cli create --url https://api.example.com/openapi.json --out ./my-mcp-server
 ```
 
 ## Auth examples
