@@ -1,85 +1,181 @@
-# api-to-mcp
+<p align="center">
+  <img src="docs/assets/readme-hero.png" alt="API-2-MCP hero banner" width="100%">
+</p>
 
-![API-2-MCP hero](docs/assets/readme-hero.png)
+<h1 align="center">API-2-MCP</h1>
 
-Generate a TypeScript MCP server from an OpenAPI spec.
+<p align="center">
+  <b>Generate production-ready MCP servers from OpenAPI specs.</b>
+</p>
 
-## MVP
+<p align="center">
+  Turn REST APIs into agent-ready tools for Claude Code, Codex, and other MCP clients.
+</p>
+
+<p align="center">
+  <a href="https://github.com/1692775560/API-2-MCP/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/1692775560/API-2-MCP/ci.yml?branch=main&label=CI&style=for-the-badge" alt="CI status"></a>
+  <img src="https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js >=20">
+  <img src="https://img.shields.io/badge/OpenAPI-3.x-6BA539?style=for-the-badge&logo=openapiinitiative&logoColor=white" alt="OpenAPI 3.x">
+  <img src="https://img.shields.io/badge/MCP-ready-00AEEF?style=for-the-badge" alt="MCP ready">
+  <img src="https://img.shields.io/badge/License-MIT-white?style=for-the-badge" alt="MIT license">
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#what-it-generates">What It Generates</a> ·
+  <a href="#claude-code--codex">Claude Code & Codex</a> ·
+  <a href="#deepseek-example">DeepSeek Example</a> ·
+  <a href="#roadmap">Roadmap</a>
+</p>
+
+---
+
+## Why API-2-MCP
+
+Modern AI agents need structured tools. Most APIs are already described by
+OpenAPI, but wiring them into MCP servers is repetitive and easy to get wrong.
+API-2-MCP reads an OpenAPI 3.x JSON spec and generates a runnable TypeScript MCP
+server with schemas, auth wiring, and operation-level tools.
+
+| From | To |
+| --- | --- |
+| OpenAPI 3.x JSON specs | TypeScript MCP servers |
+| REST path/query/header/body params | MCP tool input schemas |
+| API keys and bearer tokens | `.env`-driven generated clients |
+| API operation IDs | Agent-callable MCP tools |
+| Local specs or remote URLs | Ready-to-run generated projects |
+
+## Quick Start
+
+Use directly from GitHub:
 
 ```bash
+npx --yes github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
+```
+
+Fetch or discover a remote OpenAPI spec:
+
+```bash
+npx --yes github:1692775560/API-2-MCP create \
+  --url https://api.example.com/openapi.json \
+  --out ./my-mcp-server
+```
+
+Then run the generated MCP server:
+
+```bash
+cd ./my-mcp-server
 npm install
 npm run build
+npm start
+```
+
+## Install From Source
+
+```bash
+git clone https://github.com/1692775560/API-2-MCP.git
+cd API-2-MCP
+npm install
+npm run build
+```
+
+Generate the bundled examples:
+
+```bash
 npm run generate:petstore
 npm run generate:deepseek
 ```
 
-Generated servers include:
-
-- MCP tool registration for each OpenAPI operation
-- Input schemas derived from path, query, header, and JSON body params
-- API key or bearer token auth via environment variables
-- A generated README and `.env.example`
-- Conservative read/write risk labels based on HTTP method
-
-## DeepSeek Smoke Test
-
-Set `DEEPSEEK_API_KEY` in your shell, then run:
+Run the full local check:
 
 ```bash
-npm run smoke:deepseek
+npm run check
 ```
-
-The smoke test generates a DeepSeek MCP server, starts the generated TypeScript
-server over stdio, lists its tools, and calls the generated `chat_completions`
-MCP tool.
 
 ## CLI
 
+### Generate From A Local Spec
+
 ```bash
-npx api-to-mcp generate ./openapi.json --out ./my-mcp-server
+npx --yes github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
 ```
 
-Use directly from GitHub before the package is published:
+Use `--base-url` when the spec contains a relative `servers.url`:
 
 ```bash
-npx github:1692775560/API-2-MCP generate ./openapi.json --out ./my-mcp-server
-npx github:1692775560/API-2-MCP create --url https://api.example.com/openapi.json --out ./my-mcp-server
-```
-
-Use `--base-url` when a local OpenAPI spec contains a relative `servers.url`.
-OpenAPI 3.x JSON specs are supported; Swagger 2.0 specs should be converted to
-OpenAPI 3.x before generation.
-
-For the simple URL + key flow:
-
-```bash
-npx api-to-mcp create \
-  --url https://api.example.com/openapi.json \
-  --key your_api_key \
+npx --yes github:1692775560/API-2-MCP generate ./openapi.json \
+  --base-url https://api.example.com \
   --out ./my-mcp-server
 ```
 
-If `--url` is a base URL instead of an OpenAPI JSON URL, `api-to-mcp` will try
-common discovery paths such as `/openapi.json`, `/swagger.json`, `/v3/api-docs`,
-and `/.well-known/openapi.json`.
-
-For API-key headers instead of bearer auth:
+### Create From A URL
 
 ```bash
-npx api-to-mcp create \
+npx --yes github:1692775560/API-2-MCP create \
+  --url https://api.example.com/openapi.json \
+  --out ./my-mcp-server
+```
+
+If `--url` is a base URL instead of an OpenAPI JSON URL, API-2-MCP probes common
+discovery paths:
+
+- `/openapi.json`
+- `/swagger.json`
+- `/v3/api-docs`
+- `/.well-known/openapi.json`
+
+### Auth Options
+
+Bearer token:
+
+```bash
+npx --yes github:1692775560/API-2-MCP create \
+  --url https://api.example.com/openapi.json \
+  --key "$API_TOKEN" \
+  --out ./my-mcp-server
+```
+
+API-key header:
+
+```bash
+npx --yes github:1692775560/API-2-MCP create \
   --url https://api.example.com/openapi.json \
   --auth api-key \
-  --key your_api_key \
+  --key "$API_KEY" \
   --key-header x-api-key \
   --out ./my-mcp-server
 ```
 
-The generated project gets a ready `.env` file plus an `openapi.json` copy.
-Use `--timeout-ms` to change the per-request OpenAPI discovery timeout.
+Secrets are written to the generated `.env` file. Avoid pasting API keys into
+chat transcripts or global agent settings.
 
-## Agent Install
+## What It Generates
 
-Install the Claude Code slash command and Codex skill from a GitHub checkout:
+Generated projects include:
+
+- MCP tool registration for each OpenAPI operation
+- Input schemas derived from path, query, header, cookie, and JSON body params
+- API key or bearer token auth through environment variables
+- A generated README and `.env.example`
+- A copied `openapi.json` for reproducibility
+- Conservative read/write/destructive labels based on HTTP method
+- A TypeScript MCP server that runs over stdio
+
+Example generated project:
+
+```text
+my-mcp-server/
+  .env.example
+  openapi.json
+  package.json
+  README.md
+  src/
+    index.ts
+```
+
+## Claude Code & Codex
+
+Install the Claude Code slash command and Codex skill:
 
 ```bash
 git clone https://github.com/1692775560/API-2-MCP.git
@@ -99,11 +195,59 @@ Then use Claude Code:
 For Codex, install the included skill with the same script, then ask Codex to use
 the `api-to-mcp` skill with the same arguments.
 
+## DeepSeek Example
+
+Generate a DeepSeek MCP server from the bundled OpenAPI example:
+
+```bash
+npm run build
+npm run generate:deepseek
+```
+
+Run a live smoke test with your own key:
+
+```bash
+export DEEPSEEK_API_KEY="sk-..."
+npm run smoke:deepseek
+```
+
+The smoke test generates a DeepSeek MCP server, starts it over stdio, lists
+tools, and calls the generated chat completion tool.
+
+## Supported Specs
+
+| Feature | Status |
+| --- | --- |
+| OpenAPI 3.x JSON | Supported |
+| Local `$ref` resolution | Supported |
+| `allOf`, `anyOf`, `oneOf` body schemas | Supported |
+| Path-level and operation-level params | Supported |
+| Query, path, header, cookie params | Supported |
+| Relative server URLs | Supported with `--base-url` or source URL |
+| Swagger 2.0 | Not supported |
+| YAML input | Planned |
+
+## Development
+
+```bash
+npm install
+npm run typecheck
+npm test
+npm run check
+```
+
+CI runs on Node.js 20 and 22.
+
 ## Roadmap
 
 - YAML input
 - Postman collections
 - OAuth helpers
 - Tool allowlists
-- Smoke tests for generated tools
+- More generated runtime options
 - Python runtime
+- Published npm package
+
+## License
+
+MIT
