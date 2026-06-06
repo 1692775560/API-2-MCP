@@ -19,16 +19,21 @@ export async function loadOpenApiSpecFromUrl(
     key?: string;
     keyHeader?: string;
   },
+  options?: {
+    timeoutMs?: number;
+  },
 ): Promise<{
   spec: OpenApiSpec;
   sourceUrl: string;
 }> {
   const urls = candidateUrls(inputUrl);
   const errors: string[] = [];
+  const timeoutMs = options?.timeoutMs ?? 10000;
 
   for (const url of urls) {
     try {
       const response = await fetch(url, {
+        signal: AbortSignal.timeout(timeoutMs),
         headers: {
           accept: "application/json",
           ...authHeaders(auth),

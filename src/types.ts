@@ -9,6 +9,7 @@ export type HttpMethod =
   | "trace";
 
 export type JsonSchema = {
+  $ref?: string;
   type?: string;
   description?: string;
   enum?: unknown[];
@@ -29,11 +30,17 @@ export type OpenApiSpec = {
     description?: string;
   };
   servers?: Array<{ url: string }>;
-  paths?: Record<string, Record<string, OpenApiOperation | unknown>>;
+  paths?: Record<string, OpenApiPathItem>;
   components?: {
     schemas?: Record<string, JsonSchema>;
+    parameters?: Record<string, OpenApiParameter>;
+    requestBodies?: Record<string, OpenApiRequestBody>;
     securitySchemes?: Record<string, unknown>;
   };
+};
+
+export type OpenApiReference = {
+  $ref: string;
 };
 
 export type OpenApiParameter = {
@@ -44,18 +51,24 @@ export type OpenApiParameter = {
   schema?: JsonSchema;
 };
 
+export type OpenApiRequestBody = {
+  required?: boolean;
+  content?: Record<string, { schema?: JsonSchema | OpenApiReference }>;
+};
+
 export type OpenApiOperation = {
   operationId?: string;
   summary?: string;
   description?: string;
-  parameters?: OpenApiParameter[];
-  requestBody?: {
-    required?: boolean;
-    content?: Record<string, { schema?: JsonSchema }>;
-  };
+  parameters?: Array<OpenApiParameter | OpenApiReference>;
+  requestBody?: OpenApiRequestBody | OpenApiReference;
   responses?: Record<string, unknown>;
   tags?: string[];
 };
+
+export type OpenApiPathItem = {
+  parameters?: Array<OpenApiParameter | OpenApiReference>;
+} & Record<string, OpenApiOperation | Array<OpenApiParameter | OpenApiReference> | unknown>;
 
 export type ApiOperation = {
   toolName: string;

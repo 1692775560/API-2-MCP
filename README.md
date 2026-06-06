@@ -62,6 +62,7 @@ npx api-to-mcp create \
 ```
 
 The generated project gets a ready `.env` file plus an `openapi.json` copy.
+Use `--timeout-ms` to change the per-request OpenAPI discovery timeout.
 
 ## Roadmap
 

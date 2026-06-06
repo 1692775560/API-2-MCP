@@ -37,6 +37,7 @@ program
   .option("--key-header <header>", "Header name to use when --auth api-key is selected.", "x-api-key")
   .option("-n, --name <name>", "Generated package/server name.")
   .option("--base-url <url>", "Override the API base URL used by the generated server.")
+  .option("--timeout-ms <ms>", "Timeout in milliseconds for each OpenAPI discovery request.", "10000")
   .action(
     async (options: {
       url: string;
@@ -46,17 +47,27 @@ program
       keyHeader: string;
       name?: string;
       baseUrl?: string;
+      timeoutMs: string;
     }) => {
       if (options.auth !== "bearer" && options.auth !== "api-key") {
         throw new Error(`Unsupported auth type: ${options.auth}. Use "bearer" or "api-key".`);
       }
 
+      const timeoutMs = Number(options.timeoutMs);
+      if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) {
+        throw new Error(`Invalid --timeout-ms value: ${options.timeoutMs}`);
+      }
+
       const outDir = resolve(options.out);
-      const { spec, sourceUrl } = await loadOpenApiSpecFromUrl(options.url, {
-        type: options.auth,
-        key: options.key,
-        keyHeader: options.keyHeader,
-      });
+      const { spec, sourceUrl } = await loadOpenApiSpecFromUrl(
+        options.url,
+        {
+          type: options.auth,
+          key: options.key,
+          keyHeader: options.keyHeader,
+        },
+        { timeoutMs },
+      );
 
       await generateMcpServerFromSpec({
         spec,
