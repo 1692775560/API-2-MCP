@@ -20,7 +20,14 @@
   },
   "files": [
     "dist",
-    "README.md",
+    "README*.md",
+    "docs/assets/readme-hero.png",
+    ".claude/commands/api-to-mcp.md",
+    "skills/api-to-mcp/SKILL.md",
+    "scripts/build.mjs",
+    "scripts/install-agent-command.mjs",
+    "scripts/smoke-deepseek.mjs",
+    "examples/*/openapi.json",
     "LICENSE"
   ],
   "keywords": [
