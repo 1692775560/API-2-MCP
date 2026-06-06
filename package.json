@@ -4,7 +4,7 @@
   "description": "Generate production-ready MCP servers from OpenAPI specs.",
   "type": "module",
   "bin": {
-    "api-to-mcp": "./dist/cli.js"
+    "api-to-mcp": "dist/cli.js"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
