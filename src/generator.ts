@@ -7,13 +7,22 @@ import {
   inputSchemaForOperation,
   loadOpenApiSpec,
 } from "./openapi.js";
-import type { ApiOperation, GeneratorOptions, JsonSchema, OpenApiSpec } from "./types.js";
+import type { ApiOperation, GenerateFromSpecOptions, GeneratorOptions, OpenApiSpec } from "./types.js";
 
 export async function generateMcpServer(options: GeneratorOptions): Promise<void> {
   const spec = await loadOpenApiSpec(options.specPath);
+  await generateMcpServerFromSpec({
+    spec,
+    outDir: options.outDir,
+    serverName: options.serverName,
+  });
+}
+
+export async function generateMcpServerFromSpec(options: GenerateFromSpecOptions): Promise<void> {
+  const spec = options.spec;
   const operations = extractOperations(spec);
   const projectName = options.serverName || getProjectName(spec);
-  const baseUrl = getBaseUrl(spec);
+  const baseUrl = options.env?.baseUrl || getBaseUrl(spec);
   const outDir = resolve(options.outDir);
 
   await mkdir(`${outDir}/src`, { recursive: true });
@@ -24,6 +33,7 @@ export async function generateMcpServer(options: GeneratorOptions): Promise<void
     writeFile(`${outDir}/.env.example`, envExample(baseUrl), "utf8"),
     writeFile(`${outDir}/README.md`, readme(spec, projectName, baseUrl, operations), "utf8"),
     writeFile(`${outDir}/src/index.ts`, serverSource(projectName, baseUrl, operations), "utf8"),
+    ...(options.env ? [writeFile(`${outDir}/.env`, envFile(baseUrl, options.env), "utf8")] : []),
   ]);
 }
 
@@ -39,14 +49,11 @@ function packageJson(projectName: string): string {
         start: "node dist/index.js",
         dev: "tsx src/index.ts",
       },
-      dependencies: {
-        "@modelcontextprotocol/sdk": "^1.13.0",
-        zod: "^3.25.56",
-      },
+      dependencies: {},
       devDependencies: {
-        "@types/node": "^22.15.30",
+        "@types/node": "22.15.30",
         tsx: "^4.19.4",
-        typescript: "^5.8.3",
+        typescript: "5.8.3",
       },
       engines: {
         node: ">=20",
@@ -86,6 +93,14 @@ function envExample(baseUrl: string): string {
 API_BEARER_TOKEN=
 API_KEY=
 API_KEY_HEADER=x-api-key
+`;
+}
+
+function envFile(baseUrl: string, env: NonNullable<GenerateFromSpecOptions["env"]>): string {
+  return `API_BASE_URL=${env.baseUrl || baseUrl}
+API_BEARER_TOKEN=${env.bearerToken || ""}
+API_KEY=${env.apiKey || ""}
+API_KEY_HEADER=${env.apiKeyHeader || "x-api-key"}
 `;
 }
 
@@ -133,16 +148,12 @@ ${rows}
 }
 
 function serverSource(projectName: string, baseUrl: string, operations: ApiOperation[]): string {
-  const toolRegistrations = operations.map(toolRegistrationSource).join("\n\n");
+  const tools = operations.map(toolDefinitionSource).join(",\n");
 
-  return `import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
-
-const server = new McpServer({
+  return `const SERVER_INFO = {
   name: ${JSON.stringify(projectName)},
   version: "0.1.0",
-});
+};
 
 const API_BASE_URL = process.env.API_BASE_URL || ${JSON.stringify(baseUrl)};
 const API_BEARER_TOKEN = process.env.API_BEARER_TOKEN;
@@ -239,14 +250,124 @@ async function callApi(config: {
   return payload;
 }
 
-${toolRegistrations}
+const tools = [
+${tools}
+];
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+function send(message: unknown): void {
+  process.stdout.write(JSON.stringify(message) + "\\n");
+}
+
+function sendResult(id: string | number | null, result: unknown): void {
+  send({
+    jsonrpc: "2.0",
+    id,
+    result,
+  });
+}
+
+function sendError(id: string | number | null, code: number, message: string, data?: unknown): void {
+  send({
+    jsonrpc: "2.0",
+    id,
+    error: {
+      code,
+      message,
+      data,
+    },
+  });
+}
+
+async function handleRequest(request: any): Promise<void> {
+  if (!request || request.jsonrpc !== "2.0") {
+    sendError(request?.id ?? null, -32600, "Invalid Request");
+    return;
+  }
+
+  if (request.id === undefined) {
+    return;
+  }
+
+  switch (request.method) {
+    case "initialize":
+      sendResult(request.id, {
+        protocolVersion: request.params?.protocolVersion || "2025-03-26",
+        capabilities: {
+          tools: {
+            listChanged: false,
+          },
+        },
+        serverInfo: SERVER_INFO,
+      });
+      return;
+
+    case "tools/list":
+      sendResult(request.id, {
+        tools: tools.map((tool) => ({
+          name: tool.name,
+          description: tool.description,
+          inputSchema: tool.inputSchema,
+        })),
+      });
+      return;
+
+    case "tools/call": {
+      const tool = tools.find((item) => item.name === request.params?.name);
+      if (!tool) {
+        sendError(request.id, -32602, \`Unknown tool: \${request.params?.name}\`);
+        return;
+      }
+
+      const payload = await tool.call(request.params?.arguments || {});
+      sendResult(request.id, {
+        content: [
+          {
+            type: "text",
+            text: typeof payload === "string" ? payload : JSON.stringify(payload, null, 2),
+          },
+        ],
+      });
+      return;
+    }
+
+    default:
+      sendError(request.id, -32601, \`Method not found: \${request.method}\`);
+  }
+}
+
+let inputBuffer = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (chunk) => {
+  inputBuffer += chunk;
+
+  while (true) {
+    const lineEnd = inputBuffer.indexOf("\\n");
+    if (lineEnd === -1) {
+      break;
+    }
+
+    const line = inputBuffer.slice(0, lineEnd).replace(/\\r$/, "");
+    inputBuffer = inputBuffer.slice(lineEnd + 1);
+
+    if (!line.trim()) {
+      continue;
+    }
+
+    try {
+      const request = JSON.parse(line);
+      void handleRequest(request).catch((error) => {
+        sendError(request?.id ?? null, -32603, error instanceof Error ? error.message : String(error));
+      });
+    } catch (error) {
+      sendError(null, -32700, error instanceof Error ? error.message : String(error));
+    }
+  }
+});
+
 `;
 }
 
-function toolRegistrationSource(operation: ApiOperation): string {
+function toolDefinitionSource(operation: ApiOperation): string {
   const schema = inputSchemaForOperation(operation);
   const queryParamNames = operation.parameters
     .filter((parameter) => parameter.in === "query")
@@ -255,11 +376,11 @@ function toolRegistrationSource(operation: ApiOperation): string {
     .filter((parameter) => parameter.in === "header")
     .map((parameter) => parameter.name);
 
-  return `server.tool(
-  ${JSON.stringify(operation.toolName)},
-  ${JSON.stringify(`${operation.summary} Risk: ${operation.risk}.`)},
-  ${jsonToZodShape(schema)},
-  async (args) => {
+  return `  {
+    name: ${JSON.stringify(operation.toolName)},
+    description: ${JSON.stringify(`${operation.summary} Risk: ${operation.risk}.`)},
+    inputSchema: ${JSON.stringify(schema, null, 4).replace(/\n/g, "\n    ")},
+    async call(args: ToolArgs) {
     const payload = await callApi({
       method: ${JSON.stringify(operation.method.toUpperCase())},
       path: ${JSON.stringify(operation.path)},
@@ -269,50 +390,7 @@ function toolRegistrationSource(operation: ApiOperation): string {
       body: "body" in args ? args.body : undefined,
     });
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: typeof payload === "string" ? payload : JSON.stringify(payload, null, 2),
-        },
-      ],
-    };
-  },
-);`;
-}
-
-function jsonToZodShape(schema: JsonSchema): string {
-  const properties = schema.properties || {};
-  const required = new Set(schema.required || []);
-  const entries = Object.entries(properties).map(([name, property]) => {
-    const zod = zodForSchema(property);
-    return `  ${JSON.stringify(name)}: ${required.has(name) ? zod : `${zod}.optional()`}`;
-  });
-
-  return `{\n${entries.join(",\n")}\n}`;
-}
-
-function zodForSchema(schema: JsonSchema): string {
-  if (schema.enum?.length) {
-    const values = schema.enum.map((item) => JSON.stringify(String(item))).join(", ");
-    return `z.enum([${values}] as [string, ...string[]])${description(schema)}`;
-  }
-
-  switch (schema.type) {
-    case "integer":
-    case "number":
-      return `z.number()${description(schema)}`;
-    case "boolean":
-      return `z.boolean()${description(schema)}`;
-    case "array":
-      return `z.array(${zodForSchema(schema.items || { type: "string" })})${description(schema)}`;
-    case "object":
-      return `z.record(z.string(), z.unknown())${description(schema)}`;
-    default:
-      return `z.string()${description(schema)}`;
-  }
-}
-
-function description(schema: JsonSchema): string {
-  return schema.description ? `.describe(${JSON.stringify(schema.description)})` : "";
+    return payload;
+    },
+  }`;
 }

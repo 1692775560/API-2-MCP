@@ -10,7 +10,9 @@
     "build": "tsc",
     "dev": "tsx src/cli.ts",
     "generate:petstore": "node dist/cli.js generate examples/petstore/openapi.json --out examples/petstore/generated",
-    "check": "npm run build && npm run generate:petstore"
+    "generate:deepseek": "node dist/cli.js generate examples/deepseek/openapi.json --out examples/deepseek/generated",
+    "check": "npm run build && npm run generate:petstore && npm run generate:deepseek",
+    "smoke:deepseek": "npm run build && node scripts/smoke-deepseek.mjs"
   },
   "files": [
     "dist",
@@ -26,13 +28,12 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.13.0",
     "commander": "^12.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30",
+    "@types/node": "22.15.30",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "typescript": "5.8.3"
   },
   "engines": {
     "node": ">=20"

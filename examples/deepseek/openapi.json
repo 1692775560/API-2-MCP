@@ -1,0 +1,71 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DeepSeek API",
+    "version": "1.0.0",
+    "description": "OpenAI-compatible DeepSeek chat completions API example for api-to-mcp."
+  },
+  "servers": [
+    {
+      "url": "https://api.deepseek.com"
+    }
+  ],
+  "paths": {
+    "/chat/completions": {
+      "post": {
+        "operationId": "chatCompletions",
+        "summary": "Create a chat completion",
+        "description": "Creates a model response for the given chat conversation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "description": "DeepSeek model name, for example deepseek-chat."
+                  },
+                  "messages": {
+                    "type": "array",
+                    "description": "Conversation messages.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string",
+                          "enum": ["system", "user", "assistant"]
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["role", "content"]
+                    }
+                  },
+                  "stream": {
+                    "type": "boolean",
+                    "description": "Whether to stream the response."
+                  },
+                  "temperature": {
+                    "type": "number"
+                  },
+                  "max_tokens": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["model", "messages"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat completion response."
+          }
+        }
+      }
+    }
+  }
+}
