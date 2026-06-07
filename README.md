@@ -55,16 +55,17 @@ server with schemas, auth wiring, and operation-level tools.
 
 ## Quick Start
 
-Use directly from GitHub:
+Install the CLI, then generate from a local OpenAPI spec:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+npm install -g @taozhang123/api-to-mcp
+api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
 Fetch or discover a remote OpenAPI spec:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --out ./my-mcp-server
 ```
@@ -105,13 +106,13 @@ npm run check
 ### Generate From A Local Spec
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
 Use `--base-url` when the spec contains a relative `servers.url`:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json \
+api-to-mcp generate ./openapi.json \
   --base-url https://api.example.com \
   --out ./my-mcp-server
 ```
@@ -119,7 +120,7 @@ npx --yes @taozhang123/api-to-mcp generate ./openapi.json \
 ### Create From A URL
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --out ./my-mcp-server
 ```
@@ -137,7 +138,7 @@ discovery paths:
 Bearer token:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --key "$API_TOKEN" \
   --out ./my-mcp-server
@@ -146,7 +147,7 @@ npx --yes @taozhang123/api-to-mcp create \
 API-key header:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --auth api-key \
   --key "$API_KEY" \

@@ -56,16 +56,17 @@ AI Agent에는 안정적이고 발견하기 쉬운 구조화 도구가 필요합
 
 ## Quick Start
 
-GitHub에서 바로 실행:
+CLI를 설치한 뒤 로컬 OpenAPI 명세에서 생성:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+npm install -g @taozhang123/api-to-mcp
+api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
 원격 URL에서 OpenAPI 명세 가져오기 또는 발견:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --out ./my-mcp-server
 ```
@@ -106,13 +107,13 @@ npm run check
 ### Generate From A Local Spec
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
 `servers.url`이 상대 경로라면 `--base-url`을 지정하세요:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json \
+api-to-mcp generate ./openapi.json \
   --base-url https://api.example.com \
   --out ./my-mcp-server
 ```
@@ -120,7 +121,7 @@ npx --yes @taozhang123/api-to-mcp generate ./openapi.json \
 ### Create From A URL
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --out ./my-mcp-server
 ```
@@ -138,7 +139,7 @@ discovery path를 시도합니다:
 Bearer token:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --key "$API_TOKEN" \
   --out ./my-mcp-server
@@ -147,7 +148,7 @@ npx --yes @taozhang123/api-to-mcp create \
 API-key header:
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --auth api-key \
   --key "$API_KEY" \

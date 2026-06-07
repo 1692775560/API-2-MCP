@@ -55,16 +55,17 @@ AI Agent 需要稳定、结构化、可发现的工具。很多服务已经有 O
 
 ## 快速开始
 
-直接从 GitHub 使用：
+先安装 CLI，再从本地 OpenAPI 规范生成：
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+npm install -g @taozhang123/api-to-mcp
+api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
 从远程 URL 获取或发现 OpenAPI 规范：
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --out ./my-mcp-server
 ```
@@ -105,13 +106,13 @@ npm run check
 ### 从本地 OpenAPI 文件生成
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json --out ./my-mcp-server
+api-to-mcp generate ./openapi.json --out ./my-mcp-server
 ```
 
 如果 spec 里的 `servers.url` 是相对路径，请显式传入 `--base-url`：
 
 ```bash
-npx --yes @taozhang123/api-to-mcp generate ./openapi.json \
+api-to-mcp generate ./openapi.json \
   --base-url https://api.example.com \
   --out ./my-mcp-server
 ```
@@ -119,7 +120,7 @@ npx --yes @taozhang123/api-to-mcp generate ./openapi.json \
 ### 从 URL 创建
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --out ./my-mcp-server
 ```
@@ -136,7 +137,7 @@ npx --yes @taozhang123/api-to-mcp create \
 Bearer Token：
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --key "$API_TOKEN" \
   --out ./my-mcp-server
@@ -145,7 +146,7 @@ npx --yes @taozhang123/api-to-mcp create \
 API Key Header：
 
 ```bash
-npx --yes @taozhang123/api-to-mcp create \
+api-to-mcp create \
   --url https://api.example.com/openapi.json \
   --auth api-key \
   --key "$API_KEY" \
