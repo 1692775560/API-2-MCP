@@ -30,6 +30,7 @@
 
 <p align="center">
   <a href="#快速开始">快速开始</a> ·
+  <a href="#终端演示动画">终端演示</a> ·
   <a href="#生成内容">生成内容</a> ·
   <a href="#claude-code--codex">Claude Code & Codex</a> ·
   <a href="#deepseek-示例">DeepSeek 示例</a> ·
@@ -78,6 +79,28 @@ npm install
 npm run build
 npm start
 ```
+
+## 终端演示动画
+
+仓库内置了一个 Apple Terminal 风格的 Remotion 动画，用来演示完整
+API-2-MCP 工作流：安装 CLI、从 `openapi.json` 生成 MCP server、构建、
+启动，并把生成的 tools 连接到 Claude Code 和 Codex。
+
+<p align="center">
+  <img src="docs/assets/terminal-demo-poster.png" alt="API-2-MCP terminal demo animation poster" width="100%">
+</p>
+
+本地预览或渲染：
+
+```bash
+cd docs/remotion-terminal-demo
+npm install
+npm run preview
+npm run render
+```
+
+动画源码位于
+[`docs/remotion-terminal-demo`](docs/remotion-terminal-demo)。
 
 ## 从源码安装
 

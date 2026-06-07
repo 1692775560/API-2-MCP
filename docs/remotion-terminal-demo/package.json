@@ -1,0 +1,22 @@
+{
+  "name": "api-to-mcp-terminal-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "remotion preview src/index.ts",
+    "render": "remotion render src/index.ts TerminalDemo out/api-to-mcp-terminal-demo.mp4 --codec=h264",
+    "still": "remotion still src/index.ts TerminalDemo out/api-to-mcp-terminal-demo.png --frame=238",
+    "poster": "remotion still src/index.ts TerminalDemo ../assets/terminal-demo-poster.png --frame=238"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.370",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.370"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.8.3"
+  }
+}

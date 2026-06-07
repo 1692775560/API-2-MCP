@@ -30,6 +30,7 @@
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
+  <a href="#terminal-demo-animation">Terminal Demo</a> ·
   <a href="#what-it-generates">What It Generates</a> ·
   <a href="#claude-code--codex">Claude Code & Codex</a> ·
   <a href="#deepseek-example">DeepSeek Example</a> ·
@@ -78,6 +79,29 @@ npm install
 npm run build
 npm start
 ```
+
+## Terminal Demo Animation
+
+This repo includes an Apple Terminal-style Remotion animation that demonstrates
+the full API-2-MCP workflow: install the CLI, generate a server from
+`openapi.json`, build it, start it, and connect the resulting tools to Claude
+Code and Codex.
+
+<p align="center">
+  <img src="docs/assets/terminal-demo-poster.png" alt="API-2-MCP terminal demo animation poster" width="100%">
+</p>
+
+Preview or render it locally:
+
+```bash
+cd docs/remotion-terminal-demo
+npm install
+npm run preview
+npm run render
+```
+
+The Remotion source lives in
+[`docs/remotion-terminal-demo`](docs/remotion-terminal-demo).
 
 ## Install From Source
 
