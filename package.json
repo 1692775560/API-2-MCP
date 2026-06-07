@@ -9,7 +9,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "prepare": "npm run build",
-    "typecheck": "node scripts/build.mjs --check",
+    "typecheck": "tsc --noEmit",
     "dev": "tsx src/cli.ts",
     "test": "node --test tests/*.test.mjs",
     "generate:petstore": "node dist/cli.js generate examples/petstore/openapi.json --out examples/petstore/generated",
