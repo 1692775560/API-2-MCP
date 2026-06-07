@@ -9,7 +9,7 @@ const program = new Command();
 program
   .name("api-to-mcp")
   .description("Generate MCP servers from OpenAPI specs.")
-  .version("0.1.0");
+  .version("0.1.1");
 
 program
   .command("generate")
