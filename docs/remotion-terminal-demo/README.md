@@ -28,6 +28,12 @@ Render a README-friendly poster frame:
 npm run still
 ```
 
+Generate the README GIF:
+
+```bash
+npm run gif
+```
+
 The animation shows:
 
 - Installing `@taozhang123/api-to-mcp`

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "gif": "node scripts/generate-gif.mjs",
     "preview": "remotion preview src/index.ts",
     "render": "remotion render src/index.ts TerminalDemo out/api-to-mcp-terminal-demo.mp4 --codec=h264",
     "still": "remotion still src/index.ts TerminalDemo out/api-to-mcp-terminal-demo.png --frame=238",
@@ -17,6 +18,8 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
+    "gifenc": "^1.0.3",
+    "pngjs": "^7.0.0",
     "typescript": "^5.8.3"
   }
 }

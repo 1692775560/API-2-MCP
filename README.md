@@ -88,7 +88,7 @@ the full API-2-MCP workflow: install the CLI, generate a server from
 Code and Codex.
 
 <p align="center">
-  <img src="docs/assets/terminal-demo-poster.png" alt="API-2-MCP terminal demo animation poster" width="100%">
+  <img src="docs/assets/terminal-demo.gif" alt="API-2-MCP terminal demo animation" width="100%">
 </p>
 
 Preview or render it locally:
@@ -98,10 +98,12 @@ cd docs/remotion-terminal-demo
 npm install
 npm run preview
 npm run render
+npm run gif
 ```
 
 The Remotion source lives in
 [`docs/remotion-terminal-demo`](docs/remotion-terminal-demo).
+Static poster: [`docs/assets/terminal-demo-poster.png`](docs/assets/terminal-demo-poster.png).
 
 ## Install From Source
 

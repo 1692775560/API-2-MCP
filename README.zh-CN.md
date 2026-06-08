@@ -87,7 +87,7 @@ API-2-MCP 工作流：安装 CLI、从 `openapi.json` 生成 MCP server、构建
 启动，并把生成的 tools 连接到 Claude Code 和 Codex。
 
 <p align="center">
-  <img src="docs/assets/terminal-demo-poster.png" alt="API-2-MCP terminal demo animation poster" width="100%">
+  <img src="docs/assets/terminal-demo.gif" alt="API-2-MCP terminal demo animation" width="100%">
 </p>
 
 本地预览或渲染：
@@ -97,10 +97,13 @@ cd docs/remotion-terminal-demo
 npm install
 npm run preview
 npm run render
+npm run gif
 ```
 
 动画源码位于
 [`docs/remotion-terminal-demo`](docs/remotion-terminal-demo)。
+静态封面图：
+[`docs/assets/terminal-demo-poster.png`](docs/assets/terminal-demo-poster.png)。
 
 ## 从源码安装
 
